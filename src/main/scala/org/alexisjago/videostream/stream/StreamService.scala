@@ -1,7 +1,7 @@
 package org.alexisjago.videostream.stream
 
 trait StreamService {
-  def getStreams(id: Int)
-  def startStream(id: Int)
-  def stopStream(id: Int)
+  def getStreams(id: Long): Int
+  def startStream(id: Long)
+  def stopStream(id: Long)
 }

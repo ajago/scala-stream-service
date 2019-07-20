@@ -24,7 +24,7 @@ trait StreamWebService extends SprayJsonSupport with DefaultJsonProtocol {
   val route =
     get {
       pathPrefix(uri_root / LongNumber) { id =>
-        complete(ResponseCountBody(0))
+        complete(ResponseCountBody(streamService.getStreams(id)))
       }
     } ~
       post {

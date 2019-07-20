@@ -10,8 +10,10 @@ import org.alexisjago.videostream.web.StreamWebService._
 class StreamWebServiceTest extends FlatSpec with MockFactory with ScalatestRouteTest with Matchers {
 
   "Stream Web Service" should "get number of streams" in new Test{
+    (streamService.getStreams _).expects(1).returning(2)
+
     Get("/stream/1") ~> route ~> check {
-      responseAs[ResponseCountBody] shouldBe ResponseCountBody(1)
+      responseAs[ResponseCountBody] shouldBe ResponseCountBody(2)
     }
   }
 
