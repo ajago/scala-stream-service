@@ -8,8 +8,10 @@ import spray.json.DefaultJsonProtocol
 import spray.json.DefaultJsonProtocol.jsonFormat1
 import spray.json.DefaultJsonProtocol._
 
-object StreamWebService{
+object StreamWebService {
+
   case class ResponseCountBody(numberOfStreams: Int)
+
   case class ResponseNewStream(id: Int)
 
   implicit val itemFormat = jsonFormat1(ResponseCountBody)
@@ -18,22 +20,23 @@ object StreamWebService{
 
 trait StreamWebService extends SprayJsonSupport with DefaultJsonProtocol {
 
-  private val uri_root = "stream"
+  private val uriRoot = "user"
+  private val streamEntity = "stream"
   val streamService: StreamService
 
   val route =
     get {
-      pathPrefix(uri_root / LongNumber) { id =>
-        complete(ResponseCountBody(streamService.getStreams(id)))
+      pathPrefix(uriRoot / LongNumber / streamEntity) { userId =>
+        complete(ResponseCountBody(streamService.getStreams(userId)))
       }
     } ~
       post {
-        pathPrefix(uri_root / LongNumber) { id =>
-          complete(ResponseNewStream(streamService.startStream(id)))
+        pathPrefix(uriRoot / LongNumber / streamEntity) { userId =>
+          complete(ResponseNewStream(streamService.startStream(userId)))
         }
       } ~
       delete {
-        pathPrefix(uri_root/ LongNumber) { id =>
+        pathPrefix(uriRoot / LongNumber) { id =>
           complete(???)
         }
       }
