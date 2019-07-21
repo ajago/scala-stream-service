@@ -17,6 +17,14 @@ class StreamWebServiceTest extends FlatSpec with MockFactory with ScalatestRoute
     }
   }
 
+  it should "create a new stream" in new Test {
+    (streamService.startStream _).expects(1).returning(2)
+
+    Post("/stream/1") ~> route ~> check {
+      responseAs[ResponseNewStream] shouldBe ResponseNewStream(2)
+    }
+  }
+
   trait Test extends StreamWebService {
     val streamService = mock[StreamService]
   }
