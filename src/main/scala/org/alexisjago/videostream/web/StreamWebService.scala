@@ -13,7 +13,7 @@ object StreamWebService {
 
   case class ResponseCountBody(numberOfStreams: Int)
 
-  case class ResponseNewStream(id: Int)
+  case class ResponseNewStream(id: Long)
 
   implicit val itemFormat = jsonFormat1(ResponseCountBody)
   implicit val itemFormat2 = jsonFormat1(ResponseNewStream)
