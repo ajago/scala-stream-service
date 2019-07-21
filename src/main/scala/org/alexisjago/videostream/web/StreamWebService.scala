@@ -1,6 +1,7 @@
 package org.alexisjago.videostream.web
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import org.alexisjago.videostream.stream.StreamService
 import org.alexisjago.videostream.web.StreamWebService.{ResponseCountBody, ResponseNewStream}
@@ -36,8 +37,9 @@ trait StreamWebService extends SprayJsonSupport with DefaultJsonProtocol {
         }
       } ~
       delete {
-        pathPrefix(uriRoot / LongNumber) { id =>
-          complete(???)
+        pathPrefix(uriRoot / LongNumber / streamEntity / LongNumber) { (userId, streamId) =>
+          streamService.stopStream(userId, streamId)
+          complete(StatusCodes.NoContent)
         }
       }
 }

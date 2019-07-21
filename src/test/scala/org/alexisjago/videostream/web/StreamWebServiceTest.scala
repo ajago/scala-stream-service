@@ -1,5 +1,6 @@
 package org.alexisjago.videostream.web
 
+import akka.http.scaladsl.model.StatusCodes
 import org.alexisjago.videostream.stream.StreamService
 import org.scalatest.{FlatSpec, Matchers}
 import org.scalamock.scalatest.MockFactory
@@ -22,6 +23,14 @@ class StreamWebServiceTest extends FlatSpec with MockFactory with ScalatestRoute
 
     Post("/user/1/stream") ~> route ~> check {
       responseAs[ResponseNewStream] shouldBe ResponseNewStream(2)
+    }
+  }
+
+  it should "stop an existing stream" in new Test {
+    (streamService.stopStream _).expects(1, 2)
+
+    Delete("/user/1/stream/2") ~> route ~> check {
+      status shouldEqual StatusCodes.NoContent
     }
   }
 
