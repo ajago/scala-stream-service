@@ -17,5 +17,7 @@ class RedisStreamService(keyPrefix: String = "stream_") extends StreamService {
   override def startStream(userId: Long): Long =
     client.lpush(s"${keyPrefix}$userId", 1L).getOrElse(throw new RuntimeException("Redis error"))
 
-  override def stopStream(userId: Long, streamId: Long): Unit = ???
+  override def stopStream(userId: Long, streamId: Long): Unit = {
+    client.lrem(s"${keyPrefix}${userId}", 0, streamId)
+  }
 }
