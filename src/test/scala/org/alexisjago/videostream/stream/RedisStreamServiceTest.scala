@@ -1,10 +1,12 @@
 package org.alexisjago.videostream.stream
 
-import org.scalatest.{FlatSpec, FunSuite, Matchers}
+import org.scalatest.{FlatSpec, Matchers}
 
-class RedisStreamServiceTest extends FlatSpec with Matchers{
+class RedisStreamServiceTest extends FlatSpec with Matchers {
 
-  "RedisStreamService" should "get streams for an ID" in {
+  val redisStreamService = new RedisStreamService
 
+  "RedisStreamService" should "return 0 for a new userId" in {
+    redisStreamService.getStreams(1) shouldBe 0
   }
 }
