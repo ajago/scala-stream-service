@@ -3,13 +3,11 @@ package org.alexisjago.videostream.web
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.{HttpResponse, StatusCodes}
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.{ExceptionHandler, MissingCookieRejection, RejectionHandler}
 import org.alexisjago.videostream.stream.Exceptions.MaxStreamsException
 import org.alexisjago.videostream.stream.StreamService
 import org.alexisjago.videostream.web.StreamWebService.{ResponseCountBody, ResponseNewStream}
 import spray.json.DefaultJsonProtocol
-import spray.json.DefaultJsonProtocol.jsonFormat1
-import spray.json.DefaultJsonProtocol._
+import spray.json.DefaultJsonProtocol.{jsonFormat1, _}
 
 import scala.util.{Failure, Success}
 

@@ -1,7 +1,5 @@
 package org.alexisjago.videostream.stream
 
-import java.util.UUID
-
 import com.redis._
 import com.redis.serialization.Parse.Implicits._
 import org.alexisjago.videostream.stream.Exceptions.MaxStreamsException
@@ -14,7 +12,7 @@ class RedisStreamService(keyPrefix: String = "stream_") extends StreamService {
   private val rnd = scala.util.Random
 
   override def getNumberOfStreams(userId: Long): Int = {
-    client.lrange[Long](s"${keyPrefix}${userId}", 0, -1) match {
+    client.lrange[Long](s"$keyPrefix$userId", 0, -1) match {
       case None => 0
       case Some(l) => l.flatten.length
     }
@@ -22,7 +20,7 @@ class RedisStreamService(keyPrefix: String = "stream_") extends StreamService {
 
   override def startStream(userId: Long): Try[Long] = {
 
-    val key = s"${keyPrefix}$userId"
+    val key = s"$keyPrefix$userId"
 
     val streams = client.llen(key).getOrElse(0L).toInt
 
@@ -38,6 +36,6 @@ class RedisStreamService(keyPrefix: String = "stream_") extends StreamService {
   }
 
   override def stopStream(userId: Long, streamId: Long): Unit = {
-    client.lrem(s"${keyPrefix}${userId}", 0, streamId)
+    client.lrem(s"$keyPrefix$userId", 0, streamId)
   }
 }

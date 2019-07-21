@@ -30,7 +30,7 @@ class RedisStreamServiceTest extends FlatSpec with Matchers {
     val userId = 2L
     val streamId = 5L
     val streamId2 = 10L
-    client.lpush(s"${keyPrefix}$userId", streamId, streamId2)
+    client.lpush(s"$keyPrefix$userId", streamId, streamId2)
 
     redisStreamService.getNumberOfStreams(userId) shouldBe 2
   }
@@ -38,7 +38,7 @@ class RedisStreamServiceTest extends FlatSpec with Matchers {
   it should "delete an existing stream" in new Test {
     val userId = 2L
     val streamId = 5L
-    client.lpush(s"${keyPrefix}$userId", streamId)
+    client.lpush(s"$keyPrefix$userId", streamId)
 
     redisStreamService.stopStream(userId, streamId)
     val streams = client.lrange[Long](s"$keyPrefix$userId", 0, -1)
@@ -52,7 +52,7 @@ class RedisStreamServiceTest extends FlatSpec with Matchers {
     val streamId2 = 10L
     val streamId3 = 15L
     val streamId4 = 20L
-    client.lpush(s"${keyPrefix}$userId", streamId, streamId2, streamId3)
+    client.lpush(s"$keyPrefix$userId", streamId, streamId2, streamId3)
 
     val response = redisStreamService.startStream(userId)
 
@@ -61,7 +61,7 @@ class RedisStreamServiceTest extends FlatSpec with Matchers {
 
   trait Test {
     val keyPrefix: String = rnd.nextLong().toString + '_'
-    println(s"Using key prefix - ${keyPrefix}")
+    println(s"Using key prefix - $keyPrefix")
     val redisStreamService = new RedisStreamService(keyPrefix)
   }
 }
