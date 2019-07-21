@@ -27,7 +27,7 @@ class RedisStreamService(keyPrefix: String = "stream_") extends StreamService {
     if (streams >= 3)
       Failure(MaxStreamsException())
     else {
-      val streamId = rnd.nextLong()
+      val streamId = rnd.nextLong(9999999L)
       client.lpush(key, streamId) match {
         case Some(_) => Success(streamId)
         case None => Failure(new RuntimeException("Redis error"))
