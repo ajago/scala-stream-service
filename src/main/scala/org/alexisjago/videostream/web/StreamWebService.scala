@@ -1,13 +1,17 @@
 package org.alexisjago.videostream.web
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import akka.http.scaladsl.model.StatusCodes
+import akka.http.scaladsl.model.{HttpResponse, StatusCodes}
 import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.server.{ExceptionHandler, MissingCookieRejection, RejectionHandler}
+import org.alexisjago.videostream.stream.Exceptions.MaxStreamsException
 import org.alexisjago.videostream.stream.StreamService
 import org.alexisjago.videostream.web.StreamWebService.{ResponseCountBody, ResponseNewStream}
 import spray.json.DefaultJsonProtocol
 import spray.json.DefaultJsonProtocol.jsonFormat1
 import spray.json.DefaultJsonProtocol._
+
+import scala.util.{Failure, Success}
 
 object StreamWebService {
 
@@ -27,13 +31,17 @@ trait StreamWebService extends SprayJsonSupport with DefaultJsonProtocol {
 
   val route =
     get {
-      pathPrefix(uriRoot / LongNumber / streamEntity) { userId =>
-        complete(ResponseCountBody(streamService.getStreams(userId)))
+      pathPrefix(uriRoot / LongNumber / streamEntity / "size") { userId =>
+        complete(ResponseCountBody(streamService.getNumberOfStreams(userId)))
       }
     } ~
       post {
         pathPrefix(uriRoot / LongNumber / streamEntity) { userId =>
-          complete(ResponseNewStream(streamService.startStream(userId)))
+          streamService.startStream(userId) match {
+            case Success(streamId) => complete(ResponseNewStream(streamId))
+            case Failure(MaxStreamsException()) => complete(HttpResponse(StatusCodes.Conflict))
+            case Failure(_) => complete(HttpResponse(StatusCodes.InternalServerError))
+          }
         }
       } ~
       delete {

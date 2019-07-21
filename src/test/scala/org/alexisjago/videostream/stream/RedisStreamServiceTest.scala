@@ -3,6 +3,9 @@ package org.alexisjago.videostream.stream
 import com.redis.RedisClient
 import org.scalatest.{FlatSpec, Matchers}
 import com.redis.serialization.Parse.Implicits._
+import org.alexisjago.videostream.stream.Exceptions.MaxStreamsException
+
+import scala.util.{Failure, Success}
 
 class RedisStreamServiceTest extends FlatSpec with Matchers {
 
@@ -10,13 +13,16 @@ class RedisStreamServiceTest extends FlatSpec with Matchers {
   val rnd = scala.util.Random
 
   "RedisStreamService" should "return 0 for a new userId" in new Test {
-    redisStreamService.getStreams(1) shouldBe 0
+    redisStreamService.getNumberOfStreams(1) shouldBe 0
   }
 
   it should "create a new stream" in new Test {
-    val streamId = redisStreamService.startStream(1)
-    val streams = client.lrange[Long](s"$keyPrefix$streamId", 0, -1)
+    val userId = 1
+    val streamIdTry = redisStreamService.startStream(userId)
+    val streams = client.lrange[Long](s"$keyPrefix$userId", 0, -1)
 
+    streamIdTry shouldBe a [Success[_]]
+    val streamId = streamIdTry.get
     streams shouldBe Some(List(Some(streamId)))
   }
 
@@ -26,7 +32,7 @@ class RedisStreamServiceTest extends FlatSpec with Matchers {
     val streamId2 = 10L
     client.lpush(s"${keyPrefix}$userId", streamId, streamId2)
 
-    redisStreamService.getStreams(userId) shouldBe 2
+    redisStreamService.getNumberOfStreams(userId) shouldBe 2
   }
 
   it should "delete an existing stream" in new Test {
@@ -38,6 +44,19 @@ class RedisStreamServiceTest extends FlatSpec with Matchers {
     val streams = client.lrange[Long](s"$keyPrefix$userId", 0, -1)
 
     streams shouldBe Some(List())
+  }
+
+  it should "not allow more than 3 streams" in new Test {
+    val userId = 2L
+    val streamId = 5L
+    val streamId2 = 10L
+    val streamId3 = 15L
+    val streamId4 = 20L
+    client.lpush(s"${keyPrefix}$userId", streamId, streamId2, streamId3)
+
+    val response = redisStreamService.startStream(userId)
+
+    response shouldBe Failure(MaxStreamsException())
   }
 
   trait Test {

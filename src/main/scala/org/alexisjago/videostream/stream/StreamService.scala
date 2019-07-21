@@ -1,9 +1,12 @@
 package org.alexisjago.videostream.stream
 
-trait StreamService {
-  def getStreams(userId: Long): Int
+import scala.util.Try
 
-  def startStream(userId: Long): Long
+trait StreamService {
+  def getNumberOfStreams(userId: Long): Int
+
+  def startStream(userId: Long): Try[Long]
 
   def stopStream(userId: Long, streamId: Long)
+
 }
