@@ -10,7 +10,7 @@ class RedisStreamService(keyPrefix: String = "stream_") extends StreamService {
   override def getStreams(userId: Long): Int = {
     client.lrange[Long](s"${keyPrefix}${userId}", 0, -1) match {
       case None => 0
-      case _ => 0
+      case Some(l) => l.flatten.length
     }
   }
 

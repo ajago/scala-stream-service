@@ -20,6 +20,15 @@ class RedisStreamServiceTest extends FlatSpec with Matchers {
     streams shouldBe Some(List(Some(streamId)))
   }
 
+  it should "get streams for a valid user" in new Test {
+    val userId = 2L
+    val streamId = 5L
+    val streamId2 = 10L
+    client.lpush(s"${keyPrefix}$userId", streamId, streamId2)
+
+    redisStreamService.getStreams(userId) shouldBe 2
+  }
+
   trait Test {
     val keyPrefix: String = rnd.nextLong().toString + '_'
     println(s"Using key prefix - ${keyPrefix}")
